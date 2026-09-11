@@ -44,6 +44,7 @@ function TodoItem({ todo }) {
 
   // Touch handlers for mobile drag and drop
   const handleTouchStart = (e) => {
+    e.preventDefault();
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     touchStartTime.current = Date.now();
@@ -51,14 +52,15 @@ function TodoItem({ todo }) {
 
   const handleTouchMove = (e) => {
     if (!touchStartTime.current) return;
+    e.preventDefault();
     
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
     const holdTime = Date.now() - touchStartTime.current;
     
-    // Start dragging after holding for 200ms and moving at least 10px
-    if (holdTime > 200 && (deltaX > 10 || deltaY > 10)) {
+    // Start dragging after holding for 150ms and moving at least 5px
+    if (holdTime > 150 && (deltaX > 5 || deltaY > 5)) {
       if (!isTouchDragging) {
         setIsTouchDragging(true);
         startDrag(todo);
