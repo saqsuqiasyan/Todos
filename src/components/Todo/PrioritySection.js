@@ -35,6 +35,7 @@ function PrioritySection({ priority, todos }) {
       className={`${styles.section} ${isDragTarget ? styles.dropTarget : ''}`}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      data-priority={priority}
       aria-labelledby={`priority-${priority}-heading`}
     >
       <h3

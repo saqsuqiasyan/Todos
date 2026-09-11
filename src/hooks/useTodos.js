@@ -107,6 +107,10 @@ export function useTodos() {
     setDraggedTodo(null);
   }, [draggedTodo, updateTodoPriority]);
 
+  const dropTodoOnPriority = useCallback((todoId, targetPriority) => {
+    updateTodoPriority(todoId, targetPriority);
+  }, [updateTodoPriority]);
+
   const getFilteredTodos = useCallback(() => {
     let filtered = todos;
     
@@ -148,6 +152,7 @@ export function useTodos() {
     startDrag,
     endDrag,
     dropOnPriority,
+    dropTodoOnPriority,
     getFilteredTodos,
     getTodoStats
   };

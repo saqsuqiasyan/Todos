@@ -94,3 +94,11 @@ body {
     gap: 12px;
   }
 }
+
+/* Touch drag and drop highlight */
+.touch-drag-over {
+  background-color: #e3f2fd !important;
+  border: 2px dashed #2196f3 !important;
+  box-shadow: 0 0 12px rgba(33, 150, 243, 0.3) !important;
+  transform: scale(1.01);
+}

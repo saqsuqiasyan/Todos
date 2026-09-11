@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTodoContext } from '../../context/TodoContext';
 import styles from './TodoItem.module.css';
 
 function TodoItem({ todo }) {
-  const { removeTodo, toggleTodo, startDrag, endDrag, dropOnPriority } = useTodoContext();
+  const { removeTodo, toggleTodo, startDrag, endDrag, dropOnPriority, dropTodoOnPriority } = useTodoContext();
+  const itemRef = useRef(null);
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const touchStartPos = useRef({ x: 0, y: 0 });
+  const touchStartTime = useRef(0);
 
   const handleDragStart = (e) => {
     startDrag(todo);
@@ -38,14 +42,97 @@ function TodoItem({ todo }) {
     }
   };
 
+  // Touch handlers for mobile drag and drop
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    touchStartTime.current = Date.now();
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartTime.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    const holdTime = Date.now() - touchStartTime.current;
+    
+    // Start dragging after holding for 200ms and moving at least 10px
+    if (holdTime > 200 && (deltaX > 10 || deltaY > 10)) {
+      if (!isTouchDragging) {
+        setIsTouchDragging(true);
+        startDrag(todo);
+        if (itemRef.current) {
+          itemRef.current.style.opacity = '0.7';
+          itemRef.current.style.transform = 'scale(1.02)';
+          itemRef.current.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3)';
+        }
+      }
+      
+      // Highlight drop targets
+      const elementsAtPoint = document.elementsFromPoint(touch.clientX, touch.clientY);
+      document.querySelectorAll('[data-priority]').forEach(el => {
+        el.classList.remove('touch-drag-over');
+      });
+      
+      for (const el of elementsAtPoint) {
+        const section = el.closest('[data-priority]');
+        if (section && parseInt(section.dataset.priority) !== todo.priority) {
+          section.classList.add('touch-drag-over');
+          break;
+        }
+      }
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (isTouchDragging) {
+      // Reset styles
+      if (itemRef.current) {
+        itemRef.current.style.opacity = '';
+        itemRef.current.style.transform = '';
+        itemRef.current.style.boxShadow = '';
+      }
+      
+      // Remove all highlights
+      document.querySelectorAll('[data-priority]').forEach(el => {
+        el.classList.remove('touch-drag-over');
+      });
+
+      // Find drop target
+      const touch = e.changedTouches[0];
+      const elementsAtPoint = document.elementsFromPoint(touch.clientX, touch.clientY);
+      
+      for (const el of elementsAtPoint) {
+        const section = el.closest('[data-priority]');
+        if (section) {
+          const targetPriority = parseInt(section.dataset.priority, 10);
+          if (targetPriority && targetPriority !== todo.priority) {
+            dropTodoOnPriority(todo.id, targetPriority);
+            break;
+          }
+        }
+      }
+      
+      endDrag();
+      setIsTouchDragging(false);
+    }
+    
+    touchStartTime.current = 0;
+  };
+
   return (
     <li
-      className={`${styles.todoItem} ${todo.completed ? styles.completed : ''}`}
+      ref={itemRef}
+      className={`${styles.todoItem} ${todo.completed ? styles.completed : ''} ${isTouchDragging ? styles.dragging : ''}`}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       aria-label={`Todo: ${todo.title}, ${todo.completed ? 'completed' : 'not completed'}`}
     >
       <div className={styles.content}>
