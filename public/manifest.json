@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "ToDos",
+  "name": "ToDos - Task Manager",
+  "description": "Organize your tasks by priority with this simple and elegant todo app",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,30 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
+  "scope": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait",
+  "theme_color": "#4caf50",
+  "background_color": "#ffffff",
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Add New Task",
+      "short_name": "Add Task",
+      "description": "Quickly add a new task",
+      "url": ".",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    }
+  ]
 }
