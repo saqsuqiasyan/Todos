@@ -5,11 +5,14 @@
   border-radius: 12px;
   transition: all 0.2s ease;
   min-height: 100px;
+  border: 2px solid transparent;
 }
 
 .section.dropTarget {
-  background-color: #e8f5e9;
-  border: 2px dashed #4caf50;
+  background-color: #e3f2fd;
+  border: 2px dashed #2196f3;
+  box-shadow: 0 0 12px rgba(33, 150, 243, 0.3);
+  transform: scale(1.01);
 }
 
 .heading {

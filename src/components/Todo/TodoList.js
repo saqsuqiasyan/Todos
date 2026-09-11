@@ -31,6 +31,7 @@ function TodoList() {
           <strong>{pending}</strong> pending
         </span>
       </div>
+      <p className={styles.dragHint}>💡 Drag tasks between sections to change priority</p>
       
       <div className={styles.sections}>
         <PrioritySection priority={1} todos={priority1} />
